@@ -2,6 +2,8 @@
 library(dplyr)
 library(lubridate)
 library(ggplot2)
+#install.packages(c("scales"))
+library(scales)
 
 datCC <- read.csv("/cloud/project/climate-change.csv")
 datCO2 <- read.csv("/cloud/project/annual-co-emissions-by-region.csv")
@@ -51,4 +53,19 @@ totals <- NA_CO %>%
   summarize(Total_Emissions = sum(CO2))
 
 ggplot(totals, aes(x = Country, y = Total_Emissions)) + geom_col() + 
-  labs(x="Country", y = "Total C02 Emissions")
+  labs(x="Country", y = "Total CO2 Emissions (tons)")
+
+#HOMEWORK PROBLEMS
+
+#Q1
+
+#extracting data for nordics as countries of my choosing
+nordics <- datCO2 %>%
+  filter(Country == "Sweden" | Country == "Finland" | Country == "Norway")
+
+#cite: https://forum.posit.co/t/how-to-turn-off-scientific-notation-like-1e-09-in-r/71575
+#used to figure out how to switch the axis off of scientific notation 
+ggplot(nordics, aes(x = Year, y = CO2, color = Country)) + geom_line() + 
+  labs(x="Year", y = "Total CO2 Emissions (tons)") + xlim(1850, 2020) + 
+  scale_y_continuous(labels = comma) + ggtitle("Annual CO2 Emissions of Nordic Countries")
+
