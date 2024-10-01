@@ -63,9 +63,30 @@ ggplot(totals, aes(x = Country, y = Total_Emissions)) + geom_col() +
 nordics <- datCO2 %>%
   filter(Country == "Sweden" | Country == "Finland" | Country == "Norway")
 
+nordics$mtons <- nordics$CO2/1000000
+
 #cite: https://forum.posit.co/t/how-to-turn-off-scientific-notation-like-1e-09-in-r/71575
 #used to figure out how to switch the axis off of scientific notation 
-ggplot(nordics, aes(x = Year, y = CO2, color = Country)) + geom_line() + 
-  labs(x="Year", y = "Total CO2 Emissions (tons)") + xlim(1850, 2020) + 
+ggplot(nordics, aes(x = Year, y = mtons, color = Country)) + geom_line() + 
+  labs(x="Year", y = "Carbon Emissions (megatons CO2)") + xlim(1850, 2020) + 
   scale_y_continuous(labels = comma) + ggtitle("Annual CO2 Emissions of Nordic Countries")
+
+#Q2
+
+world_data <- datCC %>%
+  filter(Region == "World")
+
+#Note: check what exactly the anomaly thing measures
+ggplot(world_data, aes(x = ptime, y = temperature_anomaly)) + geom_line(color = 'red') + 
+  labs(x = "Year", y = "Temperature Increase (°C)") + ggtitle("Global Temperature Change from 1890 Average")
+
+grouped_emissions <- datCO2 %>%
+  group_by(Year) %>%
+  summarize(Global_Emissions = sum(CO2))
+
+grouped_emissions$gigatonCO2 <- grouped_emissions$Global_Emissions/1000000000
+
+ggplot(grouped_emissions, aes(x = Year, y = gigatonCO2)) + geom_area(color = 'blue', fill = 'blue') + 
+  labs(x = "Year", y = "Carbon Emissions (gigatons CO2)") + ggtitle("Annual Global CO2 Emissions") + 
+  scale_y_continuous(labels = comma) + xlim(1800, 2020)
 
