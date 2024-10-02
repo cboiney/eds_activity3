@@ -90,3 +90,38 @@ ggplot(grouped_emissions, aes(x = Year, y = gigatonCO2)) + geom_area(color = 'bl
   labs(x = "Year", y = "Carbon Emissions (gigatons CO2)") + ggtitle("Annual Global CO2 Emissions") + 
   scale_y_continuous(labels = comma) + xlim(1800, 2020)
 
+#Q3
+
+#CITE: https://www.statology.org/plot-multiple-columns-in-r/
+#Instructions on plotting multiple columns on same ggplot
+
+#install.packages("reshape2")
+library(reshape2)
+
+energy_data <- read.csv("/cloud/project/energy-efficiency-of-meat-and-dairy-production.csv")
+energy_gdp_data <- read.csv("/cloud/project/energy-use-gdp-decoupling.csv")
+
+us_partition <- energy_gdp_data %>%
+  filter(Entity == "United States")
+
+us_partition <- us_partition[ , -c(1,2)]
+
+colnames(us_partition)[1] <- "Year"
+colnames(us_partition)[2] <- "Consumption-Based Energy"
+colnames(us_partition)[3] <- "Domestic Energy"
+colnames(us_partition)[4] <- "GDP"
+
+#Converting data into percentages to match graph
+us_partition$`Consumption-Based Energy` <- 100*(us_partition$`Consumption-Based Energy`-us_partition$`Consumption-Based Energy`[1])/us_partition$`Consumption-Based Energy`[1]
+us_partition$`Domestic Energy` <- 100*(us_partition$`Domestic Energy`-us_partition$`Domestic Energy`[1])/us_partition$`Domestic Energy`[1]
+us_partition$`GDP` <- 100*(us_partition$`GDP`-us_partition$`GDP`[1])/us_partition$`GDP`[1]
+
+
+#(from above citation)
+us_partition <- melt(us_partition ,  id.vars = 'Year', variable.name = 'Quantity')
+
+#create line plot for each column in data frame
+ggplot(us_partition, aes(Year, value)) +
+  geom_line(aes(colour = Quantity)) + labs(x = "Year", y = "Increase Since 1995 (%)")
+
+#ggplot(us_partition, aes(x = Year, y = consumption_based_energy)) + geom_line()
