@@ -120,8 +120,12 @@ us_partition$`GDP` <- 100*(us_partition$`GDP`-us_partition$`GDP`[1])/us_partitio
 #(from above citation)
 us_partition <- melt(us_partition ,  id.vars = 'Year', variable.name = 'Quantity')
 
-#create line plot for each column in data frame
+#create line plot for each column in data frame (also from above citation)
+#Cite: https://www.statology.org/ggplot-horizontal-line/
+#Looked up how to add dotted lines at y values to make chart more interpretable
 ggplot(us_partition, aes(Year, value)) +
-  geom_line(aes(colour = Quantity)) + labs(x = "Year", y = "Increase Since 1995 (%)")
+  geom_line(aes(colour = Quantity)) + labs(x = "Year", y = "Increase Since 1995 (%)") + 
+  theme_classic() + ggtitle("Changes in Energy Use vs. Changes in GDP, United States") + 
+  geom_point(aes(color = Quantity)) + geom_hline(yintercept = seq(0, 100, by = 25), linetype = "dotted", color = "gray")
 
 #ggplot(us_partition, aes(x = Year, y = consumption_based_energy)) + geom_line()
